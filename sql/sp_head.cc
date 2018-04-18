@@ -3476,7 +3476,7 @@ sp_instr_stmt::execute(THD *thd, uint *nextp)
   thd->profiling.set_query_source(m_query.str, m_query.length);
 #endif
 
-  if ((save_enable_slow_log= thd->enable_slow_log))
+  if ((save_enable_slow_log= thd->enable_slow_log) && !thd->in_sub_stmt)
   {
     /*
       Save start time info for the CALL statement and overwrite it with the
@@ -3549,7 +3549,7 @@ sp_instr_stmt::execute(THD *thd, uint *nextp)
     }
   }
   /* Restore the original query start time */
-  if (thd->enable_slow_log)
+  if (thd->enable_slow_log && !thd->in_sub_stmt)
     thd->restore_query_start_time(&time_info);
 
   DBUG_RETURN(res || thd->is_error());
